@@ -111,7 +111,7 @@ class ClientThread(threading.Thread):
       self.log_request(request_str, 403, start_time)
       return
     
-    if not os.path.exists(filepath) or not os.path.file(filepath):
+    if not os.path.exists(filepath) or not os.path.isfile(filepath):
       self.send_error_response(404)
       self.log_request(request_str, 404, start_time)
       return
