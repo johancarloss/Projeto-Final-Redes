@@ -43,6 +43,9 @@ pip install -r requirements.txt
 Para iniciar o servidor HTTP, use o script `run.sh`:
 
 ```bash
+# Crie o diretório de logs antes de rodar pela primeira vez
+mkdir -p logs
+
 chmod +x run.sh
 ./run.sh
 ```
