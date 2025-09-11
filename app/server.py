@@ -160,9 +160,13 @@ class ClientThread(threading.Thread):
     }
 
     if filepath:
-      headers["Content-Type"] = get_mime_type(filepath)
+      mime_type = get_mime_type(filepath)
+      if mime_type == "text/html":
+        headers["Content-Type"] = "text/html; charset=utf-8"
+      else:
+        headers["Content-Type"] = mime_type
     else:
-      headers["Content-Type"] = "text/html"
+      headers["Content-Type"] = "text/html; charset=utf-8"
 
     # Converte cabeçalhos para string
     headers_str = "".join(f"{k}: {v}\r\n" for k, v in headers.items())

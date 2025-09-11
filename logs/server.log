@@ -1,0 +1,16 @@
+2025-09-10 22:56:33,423 - Servidor escutando em http://0.0.0.0:8080
+2025-09-10 22:56:33,423 - Pressione Ctrl+C para encerrar.
+2025-09-10 22:56:40,844 - Conexão aceita de 127.0.0.1:55799
+2025-09-10 22:56:40,847 - Conexão aceita de 127.0.0.1:60898
+2025-09-10 22:56:40,875 - client_ip="127.0.0.1" method="GET" path="/" status=200 response_time_ms=28.66
+2025-09-10 22:56:40,925 - client_ip="127.0.0.1" method="GET" path="/favicon.ico" status=404 response_time_ms=48.89
+2025-09-10 22:56:41,096 - Conexão aceita de 127.0.0.1:64427
+2025-09-10 22:57:03,189 - Conexão aceita de 127.0.0.1:65244
+2025-09-10 22:57:03,209 - client_ip="127.0.0.1" method="GET" path="/image1.jpg" status=200 response_time_ms=19.45
+2025-09-10 22:57:03,239 - Conexão aceita de 127.0.0.1:55896
+2025-09-10 22:57:03,441 - Conexão aceita de 127.0.0.1:51929
+2025-09-10 22:57:11,704 - Conexão aceita de 127.0.0.1:60496
+2025-09-10 22:57:11,705 - Conexão aceita de 127.0.0.1:50154
+2025-09-10 22:57:11,707 - client_ip="127.0.0.1" method="GET" path="/" status=200 response_time_ms=1.29
+2025-09-10 22:57:11,954 - Conexão aceita de 127.0.0.1:50370
+2025-09-10 22:57:42,790 - Servidor encerrado pelo usuário.

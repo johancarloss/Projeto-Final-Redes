@@ -1,0 +1,41 @@
+# --- Ambiente Virtual ---
+venv/
+.venv/
+
+# --- Cache do Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyd
+*.pdb
+
+# --- Cache do pytest ---
+.pytest_cache/
+.cache/
+
+# --- Arquivos de Logs ---
+logs/
+*.log
+results.csv
+*.png
+
+# --- Arquivos de IDE ---
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# --- Arquivos do sistema ---
+*.swp
+*~
+.DS_Store
+
+# --- Docker ---
+*.env
+docker-compose.override.yml
+
+# --- Arquivos temporários ---
+*.tmp
+*.bak
+*.orig

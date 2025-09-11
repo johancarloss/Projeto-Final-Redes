@@ -6,13 +6,13 @@ PORT=${1:-8080}
 # Verifica se o ambiente virtual existe, se não, cria e instala as dependências
 if [ ! -d "venv" ]; then
   echo "Criando ambiente virtual..."
-  python3 -m venv venv
+  python -m venv venv
   echo "Ativando ambiente e instalando dependências..."
-  source venv/bin/activate
+  source venv/Scripts/activate
   pip install -r requirements.txt
 else
   source venv/bin/activate
 fi
 
 echo "Iniciando servidor HTTP na porta $PORT..."
-python3 app/server.py --port $PORT
+python app/server.py --port $PORT
