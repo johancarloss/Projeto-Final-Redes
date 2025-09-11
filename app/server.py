@@ -76,7 +76,7 @@ class ClientThread(threading.Thread):
         self.process_request(request_str, start_time)
 
     except socket.timeout:
-      logging.info(f"Conexão com {self.cliente_address[0]} expirou (timeout).")
+      logging.info(f"Conexão com {self.client_address[0]} expirou (timeout).")
     except Exception as e:
       logging.error(f"Erro na thread do cliente {self.client_address[0]}: {e}")
     finally:
@@ -134,7 +134,7 @@ class ClientThread(threading.Thread):
         mime_type += "; charset=utf-8"
 
       # Constrói e envia os cabeçalhos primeiro
-      headers = self.build_response(200, {
+      headers = self.build_headers(200, {
         "Content-Type": mime_type,
         "Content-Length": file_size,
         "Connection": "keep-alive"
