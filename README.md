@@ -50,10 +50,10 @@ chmod +x run.sh
 O servidor estará rodando em https://localhost:8080
 Você pode acessar pelo navegador ou via curl:
 
-Acessar o index
+Acessar o index  
 curl https://localhost:8080/
 
-Acessar a imagem
+Acessar a imagem  
 curl https://localhost:8080/image1.jpg -o downloaded_image.jpg
 
 ### 3. Executando com Docker
