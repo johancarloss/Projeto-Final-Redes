@@ -14,3 +14,18 @@
 2025-09-10 22:57:11,707 - client_ip="127.0.0.1" method="GET" path="/" status=200 response_time_ms=1.29
 2025-09-10 22:57:11,954 - Conexão aceita de 127.0.0.1:50370
 2025-09-10 22:57:42,790 - Servidor encerrado pelo usuário.
+2025-09-10 23:05:02,886 - Servidor escutando em http://0.0.0.0:8080
+2025-09-10 23:05:02,887 - Pressione Ctrl+C para encerrar.
+2025-09-10 23:05:12,623 - Conexão aceita de 127.0.0.1:49671
+2025-09-10 23:05:12,625 - Conexão aceita de 127.0.0.1:54257
+2025-09-10 23:05:12,646 - client_ip="127.0.0.1" method="GET" path="/" status=200 response_time_ms=20.17
+2025-09-10 23:05:12,875 - Conexão aceita de 127.0.0.1:61858
+2025-09-10 23:05:24,336 - Conexão aceita de 127.0.0.1:62348
+2025-09-10 23:05:24,342 - client_ip="127.0.0.1" method="GET" path="/image1.jpg" status=200 response_time_ms=3.02
+2025-09-10 23:05:24,392 - Conexão aceita de 127.0.0.1:57385
+2025-09-10 23:05:24,606 - Conexão aceita de 127.0.0.1:65490
+2025-09-10 23:05:30,784 - Conexão aceita de 127.0.0.1:59684
+2025-09-10 23:05:30,786 - Conexão aceita de 127.0.0.1:62674
+2025-09-10 23:05:30,787 - client_ip="127.0.0.1" method="GET" path="/" status=200 response_time_ms=0.85
+2025-09-10 23:05:31,049 - Conexão aceita de 127.0.0.1:63500
+2025-09-10 23:05:47,590 - Servidor encerrado pelo usuário.
