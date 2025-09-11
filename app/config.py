@@ -15,3 +15,5 @@ KEEP_ALIVE_TIMEOUT = 5          # Segundos que uma conexão keep-alive aguarda p
 # Configurações de Arquivos
 WWW_ROOT = "www"                # Diretório raiz para servir arquivos estáticos
 LOG_FILE = "logs/server.log"    # Arquivo para registrar os logs de acesso
+STREAMING_THRESHOLD_MB = 2      # Arquivos maiores que este valor (em MB) serão transmitidos em chunks
+CHUNK_SIZE_BYTES = 8192         # Tamanho de cada chunk de streaming (8 KB)
