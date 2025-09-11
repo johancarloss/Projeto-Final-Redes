@@ -36,6 +36,7 @@ source venv/bin/activate
 venv\Scripts\activat
 
 pip install -r requirements.txt
+```
 
 ### 2. Executando o Servidor Localmente
 
@@ -44,6 +45,7 @@ Para iniciar o servidor HTTP, use o script `run.sh`:
 ```bash
 chmod +x run.sh
 ./run.sh
+```
 
 O servidor estará rodando em https://localhost:8080
 Você pode acessar pelo navegador ou via curl:
@@ -61,6 +63,7 @@ Você pode rodar o servidor em um container Docker:
 ```bash
 docker build -t http-server
 docker run -p 8080:8080 --name my-http-server http-server
+```
 
 ### 4. Testes de Carga (em desenvolvimento)
 
@@ -68,6 +71,7 @@ Futuramente será possível simular múltiplos acessos com:
 
 ```bash
 python scripts/load_test.py
+```
 
 ### 5. Geração de Gráficos (em desenvolvimento)
 
@@ -75,3 +79,4 @@ Após os testes de carga, será possível gerar gráficos com:
 
 ```bash
 python scripts/plot_results.py
+```
