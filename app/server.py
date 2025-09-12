@@ -9,6 +9,10 @@ import argparse
 from datetime import datetime, timezone
 from time import time
 
+# Importando o cache
+from cache import Cache
+cache = Cache()
+
 # Importa as configurações
 import config
 
@@ -126,6 +130,7 @@ class ClientThread(threading.Thread):
     Usa streaming se o arquivo for maior que o limiar definido em config.
     """
     try:
+      filepath_normalized = os.path.abspath(filepath)
       file_size = os.path.getsize(filepath)
       mime_type = get_mime_type(filepath)
 
@@ -141,13 +146,23 @@ class ClientThread(threading.Thread):
       })
       self.client_socket.sendall(headers.encode('utf-8'))
 
+      # --- Integração com Cache ---
+      cached = cache.get(filepath_normalized)
+      if cached:
+        logging.info(f"Cache hit: {filepath_normalized}")
+        self.client_socket.sendall(cached)
+        return
+      else:
+        logging.info(f"Cache miss: {filepath_normalized}")
+
+
       # Decode se usa streaming ou envia tudo de uma vez
       streaming_threshold_bytes = config.STREAMING_THRESHOLD_MB * 1024 * 1024
 
       if file_size > streaming_threshold_bytes:
         # --- Lógica de Streaming ---
-        logging.info(f"Servindo arquivo {filepath} via streaming ({file_size} bytes).")
-        with open(filepath, 'rb') as f:
+        logging.info(f"Servindo arquivo {filepath_normalized} via streaming ({file_size} bytes).")
+        with open(filepath_normalized, 'rb') as f:
           while True:
             chunk = f.read(config.CHUNK_SIZE_BYTES)
             if not chunk:
@@ -155,11 +170,11 @@ class ClientThread(threading.Thread):
             self.client_socket.sendall(chunk)
       else:
         # --- Envio completo para arquivos pequenos ---
-        with open(filepath, 'rb') as f:
+        with open(filepath_normalized, 'rb') as f:
           self.client_socket.sendall(f.read())
     
     except Exception as e:
-      logging.error(f"Erro ao enviar arquivo {filepath}: {e}")
+      logging.error(f"Erro ao enviar arquivo {filepath_normalized}: {e}")
       # Se ocorrer um erro durante o envio, a conexão já pode estar comprometida,
       # mas tentamos enviar um erro de servidor mesmo assim.
       if not self.client_socket._closed:
@@ -226,9 +241,7 @@ class ClientThread(threading.Thread):
     )
 
 def main(host, port):
-  """
-  Função principal que inicia o servidor.
-  """
+  """Função principal que inicia o servidor."""
   # Cria um socket TCP/IP
   server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
   # Permite reutilizar o endereço para evitar erro "Address already in use"
