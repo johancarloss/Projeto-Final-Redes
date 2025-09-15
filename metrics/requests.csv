@@ -2062,3 +2062,11 @@ timestamp,client_ip,method,path,status,response_time_ms,bytes_sent,cache_hit,con
 1757736362,127.0.0.1,GET,/image1.jpg,304,1,0,-,1
 1757736367,127.0.0.1,-,-,500,5002,33,-,-
 1757736367,127.0.0.1,-,-,500,5003,33,-,-
+1757903186,127.0.0.1,GET,/index.html,200,66,466,miss,-
+1757903209,127.0.0.1,HEAD,/index.html,200,1,0,-,-
+1757903221,127.0.0.1,GET,/naoexiste.txt,404,1,9,-,-
+1757903247,127.0.0.1,HEAD,/index.html,200,2,0,-,-
+1757903261,127.0.0.1,GET,/index.html,304,3,0,-,1
+1757903338,127.0.0.1,GET,/index.html,200,3,466,miss,-
+1757903350,127.0.0.1,GET,/index.html,200,3,466,hit,-
+1757903361,127.0.0.1,GET,/index.html,200,1,466,bypass,-
