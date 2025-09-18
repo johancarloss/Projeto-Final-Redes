@@ -48,7 +48,7 @@ class InMemoryCache:
       if time.time() > expiration_time:
         # Expiração preguiçosa: remove o item ao acessá-lo
         del self._cache[key]
-        self._misses
+        self._misses += 1
         return None # Cache miss (item expirado)
       
       self._hits += 1
