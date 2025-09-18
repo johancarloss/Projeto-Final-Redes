@@ -17,3 +17,7 @@ WWW_ROOT = "www"                # Diretório raiz para servir arquivos estático
 LOG_FILE = "logs/server.log"    # Arquivo para registrar os logs de acesso
 STREAMING_THRESHOLD_MB = 2      # Arquivos maiores que este valor (em MB) serão transmitidos em chunks
 CHUNK_SIZE_BYTES = 8192         # Tamanho de cada chunk de streaming (8 KB)
+
+# Configurações de Cache
+ENABLE_CACHE = True            # Habilita ou desabilita o cache em memória
+DEFAULT_TTL_SECONDS = 30         # Tempo padrão de vida do cache (em segundos)
