@@ -145,7 +145,7 @@ class LRUCache:
       }
 
 # --- Instância Global do Cache ---
-from config import MAX_CACHE_ITEMS, MAX_CACHE_BYTES
+from .config import MAX_CACHE_ITEMS, MAX_CACHE_BYTES
 
 # A instância agora é criada com os limites definidos em config.py
 cache_instance = LRUCache(MAX_CACHE_ITEMS, MAX_CACHE_BYTES)

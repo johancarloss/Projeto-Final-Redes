@@ -21,4 +21,4 @@ DEFAULT_TTL_SECONDS = 30         # Tempo padrão de vida do cache (em segundos)
 # Novos limites para Política de Eviction (LRU)
 # O cache irá remover itens antigos se qualquer um dos limites for excedido.
 MAX_CACHE_ITEMS = 100          # Número máximo de itens na cache
-MAX_CACHE_SIZE_MB = 5 * 1024 * 1024         # Tamanho máximo da cache (5MB)
+MAX_CACHE_BYTES = 5 * 1024 * 1024         # Tamanho máximo da cache (5MB)
