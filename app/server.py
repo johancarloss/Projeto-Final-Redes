@@ -37,7 +37,8 @@ MIME_TYPES = {
   '.jpeg': 'image/jpeg',
   '.png': 'image/png',
   '.gif': 'image/gif',
-  '.ico': 'image/x-icon'
+  '.ico': 'image/x-icon',
+  ".txt": "text/plain",
 }
 
 def get_mime_type(filepath):
