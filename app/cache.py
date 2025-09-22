@@ -13,9 +13,12 @@ class _CacheNode:
   """Nó interno para a lista duplamente encadeada que gerencia a ordem LRU."""
   def __init__(self, key, value, expiration_time):
     self.key = key
+    # self.value agora será um dicionário: {'content': ..., 'etag': ...}
     self.value = value
     self.expiration_time = expiration_time
-    self.size_bytes = len(value) if isinstance(value, bytes) else getsizeof(value)
+    # Calculamos o tamanho com base no conteúdo real em bytes
+    content_bytes = self.value.get('content', b'')
+    self.size_bytes = len(content_bytes) if isinstance(content_bytes, bytes) else getsizeof(content_bytes)
     self.prev = None
     self.next = None
 
