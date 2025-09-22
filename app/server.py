@@ -10,10 +10,10 @@ from datetime import datetime, timezone
 from time import time
 
 # Importa as configurações
-import config
+from . import config
 
 # Importa instâncias do cache
-from cache import cache_instance
+from .cache import cache_instance
 
 # --- Configuração do Logging ---
 # Garante que o diretório de logs existe

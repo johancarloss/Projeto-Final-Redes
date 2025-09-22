@@ -27,4 +27,4 @@ else
 fi
 
 echo "Iniciando servidor HTTP na porta $PORT..."
-python app/server.py --port $PORT
+python -m app.server --port $PORT
