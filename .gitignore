@@ -32,11 +32,17 @@ requests.csv
 *~
 .DS_Store
 
-# --- Docker ---
-*.env
-docker-compose.override.yml
-
 # --- Arquivos temporários ---
 *.tmp
 *.bak
 *.orig
+
+# Arquivos de métricas gerados pelo servidor
+/metrics/
+
+# Arquivos de resultados gerados pelos benchmarks
+/results/
+
+# Arquivos de captura de rede (para o Wireshark)
+*.pcap
+*.pcapng
