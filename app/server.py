@@ -252,6 +252,7 @@ class ClientThread(threading.Thread):
 
     cache_status = "DISABLED"
     file_content = None
+    cached_data = None
 
     # --- Etapa 1: Consultar o Cache ---
     if config.ENABLE_CACHE:
@@ -271,13 +272,12 @@ class ClientThread(threading.Thread):
           cache_status = "STALE"
           logging.info(f"Cache STALE para o arquivo: {filepath}. Invalidando.")
           cache_instance.invalidate(filepath)
-          cached_data = None # Força a leitura do disco
       else:
         cache_status = "MISS"
         logging.info(f"Cache MISS para o arquivo: {filepath}")
 
     # --- Etapa 2: Ler do Disco (se cache miss ou stale) ---
-    if cached_data is None:
+    if file_content is None:
       try:
         # Limita o cache para arquivos menores que o limitar de streaming
         file_size = os.path.getsize(filepath)
