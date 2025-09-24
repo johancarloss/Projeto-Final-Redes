@@ -30,12 +30,12 @@ class MetricsLogger:
     self._initialize_file()
 
   def _initialize_file(self):
-    """Cria o diretório e o arquivo CSV com o cabeçalho, se necessário."""
+    """Cria o diretório e o arquivo CSV com cabeçalho, se não existirem."""
     with self._lock:
-      # Garante que o diretório existe
+      # Garante que o diretório de métricas exista antes de checar o arquivo.
       os.makedirs(os.path.dirname(self.filepath), exist_ok=True)
-
-      # Escreve o cabeçalho se o arquivo não existir
+      
+      # Escreve o cabeçalho se o arquivo for novo
       if not os.path.exists(self.filepath):
         with open(self.filepath, 'w', newline='') as f:
           writer = csv.writer(f)
