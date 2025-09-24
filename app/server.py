@@ -14,8 +14,9 @@ from time import time
 # Importa as configurações
 from . import config
 
-# Importa instâncias do cache
+# Importa instâncias do cache e do logger de métricas
 from .cache import cache_instance
+from .metrics import metrics_logger
 
 # --- Configuração do Logging ---
 # Garante que o diretório de logs existe
@@ -125,70 +126,106 @@ class ClientThread(threading.Thread):
 
   def process_request(self, request_str, start_time):
     """
-    Analisa a requisição HTTP recebida e encaminha para o método correto.
-    A lógica de cache/streaming/log está dentro de send_file_response/stream_file.
+    Analisa a requisição HTTP, gerencia o cache e envia a resposta.
+    Centraliza o log de métricas no final da execução.
     """
+    status_code = 500 # Status padrão para erro inesperado
+    bytes_sent = 0
+    cache_status = "N/A"
+
     try:
       first_line = request_str.split('\r\n')[0]
       method, path, _ = first_line.split()
     except ValueError:
-      self.send_error_response(400)
-      self.log_request(request_str, 400, start_time)
-      return
+      method, path = "INVALID", "INVALID"
     
-    # Suportamos apenas o método GET
-    if method != 'GET':
-      self.send_error_response(405)
-      self.log_request(request_str, 405, start_time)
-      return
-    
-    # Normaliza o path
-    if path == '/':
-      path = '/index.html'
-
-    # Constrói o caminho absoluto do arquivo
-    base_dir = os.path.abspath(config.WWW_ROOT)
-    filepath = os.path.join(base_dir, path.lstrip('/'))
-
-    # Segurança: Garante que o arquivo está dentro do diretório permitido
-    if not os.path.abspath(filepath).startswith(base_dir):
-      self.send_error_response(403)
-      self.log_request(request_str, 403, start_time)
-      return
-    
-    # Verifica se o arquivo existe
-    if not os.path.exists(filepath) or not os.path.isfile(filepath):
-      self.send_error_response(404)
-      self.log_request(request_str, 404, start_time)
-      return
-    
-    # Extraio os cabeçalhos da requisição
-    request_headers = parse_headers(request_str)
-
-    # --- Lógica de Cache Condicional ---
-    current_etag = generate_etag(filepath)
-    last_modified_time = os.path.getmtime(filepath)
-
-    # Chega o If-None-Match (ETag) - tem prioridade
-    if_none_match = request_headers.get('if-none-match')
-    if if_none_match and if_none_match == current_etag:
-      self.send_not_modified_response(current_etag, last_modified_time)
-      self.log_request(request_str, 304, start_time, cache_status="CONDITIONAL_HIT")
-      return
-    
-    # Checa o If-Modified-Since (Data de Modificação)
-    if_modified_since_str = request_headers.get('if-modified-since')
-    if if_modified_since_str and not if_none_match:
-      if_modified_since_time = parse_http_date(if_modified_since_str)
-      # Se o arquivo não foi modificado desde a data enviada pelo cleinte
-      if if_modified_since_time and int(last_modified_time) <= if_modified_since_time:
-        self.send_not_modified_response(current_etag, last_modified_time)
-        self.log_request(request_str, 304, start_time, cache_status="CONDITIONAL_HIT")
+    try:
+      # --- Lógica de Roteamento e Validação ---
+      if method != 'GET':
+        status_code = 405
+        bytes_sent = self.send_error_response(status_code)
         return
       
-    # Se nenhuma condição de cache foi satisfeita, serve o arquivo normalmente
-    self.send_file_response(filepath, current_etag, last_modified_time)
-    self.log_request(request_str, 200, start_time, "CHECKED_LRU")
+      # Normaliza o path
+      if path == '/':
+        path = '/index.html'
+
+      # Constrói o caminho absoluto do arquivo
+      base_dir = os.path.abspath(config.WWW_ROOT)
+      filepath = os.path.join(base_dir, path.lstrip('/'))
+
+      # Segurança: Garante que o arquivo está dentro do diretório permitido
+      if not os.path.abspath(filepath).startswith(base_dir):
+        status_code = 403
+        bytes_sent = self.send_error_response(status_code)
+        return
+      
+      # Verifica se o arquivo existe
+      if not os.path.exists(filepath) or not os.path.isfile(filepath):
+        status_code = 404
+        bytes_sent = self.send_error_response(status_code)
+        return
+      
+      # Extraio os cabeçalhos da requisição
+      request_headers = parse_headers(request_str)
+
+      # --- Lógica de Cache Condicional ---
+      current_etag = generate_etag(filepath)
+      last_modified_time = os.path.getmtime(filepath)
+
+      # Chega o If-None-Match (ETag) - tem prioridade
+      if_none_match = request_headers.get('if-none-match')
+      if if_none_match and if_none_match == current_etag:
+        status_code = 304
+        cache_status = "CONDITIONAL_HIT"
+        bytes_sent = self.send_not_modified_response(current_etag, last_modified_time)
+        return
+      
+      # Checa o If-Modified-Since (Data de Modificação)
+      if_modified_since_str = request_headers.get('if-modified-since')
+      if if_modified_since_str and not if_none_match:
+        if_modified_since_time = parse_http_date(if_modified_since_str)
+        # Se o arquivo não foi modificado desde a data enviada pelo cleinte
+        if if_modified_since_time and int(last_modified_time) <= if_modified_since_time:
+          status_code = 304
+          cache_status = "CONDITIONAL_HIT"
+          bytes_sent = self.send_not_modified_response(current_etag, last_modified_time)
+          return
+        
+      # --- Servir o Arquivo (com captura de métricas) ---
+      status_code = 200
+
+      # Lógica de streaming movida para cá para capturar métricas corretamente
+      file_size = os.path.getsize(filepath)
+      streaming_threshold_bytes = config.STREAMING_THRESHOLD_MB * 1024 * 1024
+      if file_size > streaming_threshold_bytes:
+        self.stream_file(filepath, file_size, current_etag, last_modified_time)
+        bytes_sent = file_size
+        cache_status = "STREAMING"
+      else:
+        bytes_sent, cache_status = self.send_file_response(filepath, current_etag, last_modified_time)
+        
+    except Exception as e:
+      # Em caso de um erro não tratado, loga o erro e envia 500
+      logging.error(f"Erro inesperado ao processar '{method} {path}': {e}")
+      try:
+        status_code = 500
+        bytes_sent = self.send_error_response(status_code)
+      except:
+        # Se até o envio do erro falhar, não há muito o que fazer
+        pass
+    finally:
+      # --- PONTO ÚNICO DE LOG DE MÉTRICAS ---
+      response_time_ms = (time() - start_time) * 1000
+      metrics_logger.log_request(
+        client_ip=self.client_address[0],
+        method=method,
+        path=path,
+        status=status_code,
+        response_time_ms=response_time_ms,
+        bytes_sent=bytes_sent,
+        cache_status=cache_status
+      )
 
   def send_not_modified_response(self, etag, last_modified_time):
     """
@@ -201,6 +238,8 @@ class ClientThread(threading.Thread):
     }
     response_headers = self.build_headers(304, extra_headers)
     self.client_socket.sendall(response_headers.encode('utf-8'))
+
+    return 0  # Nenhum byte de corpo é enviado
     
   # send_file_response agora aceita etag e last_modified para incluir nos cabeçalhos
   def send_file_response(self, filepath, etag, last_modified_time):
@@ -277,8 +316,12 @@ class ClientThread(threading.Thread):
         "Last-Modified": formatdate(timeval=last_modified_time, localtime=False, usegmt=True)
       })
       self.client_socket.sendall(headers.encode('utf-8') + file_content)
+
+      return len(file_content), cache_status
+    
     except Exception as e:
       logging.error(f"Erro ao enviar resposta para {filepath}: {e}")
+      return 0, cache_status # Nenhum byte enviado em caso de erro
   
   def stream_file(self, filepath, file_size, etag, last_modified_time):
     """Função dedicada para servir arquivos grandes por streaming (não usa cache)."""
@@ -321,6 +364,8 @@ class ClientThread(threading.Thread):
     full_response = headers.encode('utf-8') + body
     self.client_socket.sendall(full_response)
 
+    return len(body)
+
   def build_headers(self, status_code, extra_headers):
     """
     Constrói a linha de status e os cabeçalhos HTTP.
@@ -341,27 +386,6 @@ class ClientThread(threading.Thread):
 
     headers_str = "".join(f"{k}: {v}\r\n" for k, v in headers.items())
     return f"{response_line}{headers_str}\r\n"
-  
-  def log_request(self, request_str, status_code, start_time, cache_status="N/A"):
-    """
-    Registra os detalhes da requisição no log.
-    """
-    response_time_ms = (time() - start_time) * 1000
-    client_ip = self.client_address[0]
-
-    try:
-      first_line = request_str.split('\r\n')[0]
-      method, path, _ = first_line.split()
-    except ValueError:
-      # Não foi possível parsear, loga o que for possível
-      method, path = "INVALID", "INVALID"
-
-    # Incluímos o status do cache no log para facilitar a depuração
-    logging.info(
-      f'client_ip="{client_ip}" method="{method}" path="{path}" '
-      f'status={status_code} response_time_ms={response_time_ms:.2f}'
-      f' cache_status="{cache_status}"'
-    )
 
 def main(host, port):
   """

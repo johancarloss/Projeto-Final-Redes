@@ -16,9 +16,12 @@ CHUNK_SIZE_BYTES = 8192         # Tamanho de cada chunk de streaming (8 KB)
 
 # Configurações de Cache
 ENABLE_CACHE = True            # Habilita ou desabilita o cache em memória
-DEFAULT_TTL_SECONDS = 30         # Tempo padrão de vida do cache (em segundos)
+DEFAULT_TTL_SECONDS = 10         # Tempo padrão de vida do cache (em segundos)
 
 # Novos limites para Política de Eviction (LRU)
 # O cache irá remover itens antigos se qualquer um dos limites for excedido.
 MAX_CACHE_ITEMS = 100          # Número máximo de itens na cache
 MAX_CACHE_BYTES = 5 * 1024 * 1024         # Tamanho máximo da cache (5MB)
+
+# Configurações de Métricas
+METRICS_CSV_FILE = "metrics/requests.csv"  # Arquivo CSV para armazenar métricas de requisições

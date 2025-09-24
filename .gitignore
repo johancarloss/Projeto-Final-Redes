@@ -19,6 +19,7 @@ logs/
 *.log
 results.csv
 *.png
+requests.csv
 
 # --- Arquivos de IDE ---
 .idea/
