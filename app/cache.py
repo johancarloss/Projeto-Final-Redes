@@ -16,9 +16,13 @@ class _CacheNode:
     # self.value agora será um dicionário: {'content': ..., 'etag': ...}
     self.value = value
     self.expiration_time = expiration_time
-    # Calculamos o tamanho com base no conteúdo real em bytes
-    content_bytes = self.value.get('content', b'')
-    self.size_bytes = len(content_bytes) if isinstance(content_bytes, bytes) else getsizeof(content_bytes)
+    if isinstance(self.value, dict):
+      content_bytes = self.value.get('content', b'')
+      self.size_bytes = len(content_bytes) if isinstance(content_bytes, bytes) else getsizeof(content_bytes)
+    else:
+      # Para nos nós sentinela (head/tail), o valor é None e o tamanho é 0.
+      self.size_bytes = 0
+      
     self.prev = None
     self.next = None
 
